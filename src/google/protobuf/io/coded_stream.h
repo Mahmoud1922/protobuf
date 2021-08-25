@@ -137,7 +137,26 @@
 #include <sys/endian.h>  // __BYTE_ORDER
 #else
 #if !defined(__QNX__)
-#include <endian.h>  // __BYTE_ORDER
+#ifdef HAS_OS_ZEPHYR
+#include <sys/byteorder.h>
+
+#define htobe16(x) sys_cpu_to_be16(x)
+#define htole16(x) sys_cpu_to_le16(x)
+#define be16toh(x) sys_be16_to_cpu(x)
+#define le16toh(x) sys_le16_to_cpu(x)
+
+#define htobe32(x) sys_cpu_to_be32(x)
+#define htole32(x) sys_cpu_to_le32(x)
+#define be32toh(x) sys_be32_to_cpu(x)
+#define le32toh(x) sys_le32_to_cpu(x)
+
+#define htobe64(x) sys_cpu_to_be64(x)
+#define htole64(x) sys_cpu_to_le64(x)
+#define be64toh(x) sys_be64_to_cpu(x)
+#define le64toh(x) sys_le64_to_cpu(x)
+#else
+#include <endian.h>     // __BYTE_ORDER
+#endif
 #endif
 #endif
 #if ((defined(__LITTLE_ENDIAN__) && !defined(__BIG_ENDIAN__)) ||    \

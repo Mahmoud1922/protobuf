@@ -49,6 +49,7 @@ set(libprotobuf_lite_includes
   ${protobuf_source_dir}/src/google/protobuf/stubs/common.h
   ${protobuf_source_dir}/src/google/protobuf/stubs/int128.h
   ${protobuf_source_dir}/src/google/protobuf/stubs/once.h
+  ${protobuf_source_dir}/src/google/protobuf/stubs/system_mutex.h
   ${protobuf_source_dir}/src/google/protobuf/stubs/status.h
   ${protobuf_source_dir}/src/google/protobuf/stubs/statusor.h
   ${protobuf_source_dir}/src/google/protobuf/stubs/stringpiece.h

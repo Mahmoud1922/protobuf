@@ -30,8 +30,6 @@
 #ifndef GOOGLE_PROTOBUF_STUBS_MUTEX_H_
 #define GOOGLE_PROTOBUF_STUBS_MUTEX_H_
 
-#include <mutex>
-
 #ifdef GOOGLE_PROTOBUF_SUPPORT_WINDOWS_XP
 
 #include <windows.h>
@@ -44,6 +42,8 @@
 #endif
 
 #include <google/protobuf/stubs/macros.h>
+#include <google/protobuf/stubs/system_mutex.h>
+#include <google/protobuf/stubs/once.h>
 
 // Define thread-safety annotations for use below, if we are building with
 // Clang.
@@ -105,11 +105,11 @@ class CallOnceInitializedMutex {
 
  private:
   T& get() {
-    std::call_once(flag_, [&] { ::new (static_cast<void*>(&buf_)) T(); });
+    google::protobuf::internal::call_once(flag_, [&] { ::new (static_cast<void*>(&buf_)) T(); });
     return reinterpret_cast<T&>(buf_);
   }
 
-  std::once_flag flag_;
+  google::protobuf::internal::once_flag flag_;
   alignas(T) char buf_[sizeof(T)];
 };
 
@@ -125,6 +125,9 @@ class GOOGLE_PROTOBUF_CAPABILITY("mutex") PROTOBUF_EXPORT WrappedMutex {
 #endif
   void Lock() GOOGLE_PROTOBUF_ACQUIRE() { mu_.lock(); }
   void Unlock() GOOGLE_PROTOBUF_RELEASE() { mu_.unlock(); }
+  // Alias to be used by std::lock_guard
+  void lock() GOOGLE_PROTOBUF_ACQUIRE() { mu_.lock(); }
+  void unlock() GOOGLE_PROTOBUF_RELEASE() { mu_.unlock(); }
   // Crash if this Mutex is not held exclusively by this thread.
   // May fail to crash when it should; will never crash when it should not.
   void AssertHeld() const {}
@@ -133,9 +136,9 @@ class GOOGLE_PROTOBUF_CAPABILITY("mutex") PROTOBUF_EXPORT WrappedMutex {
 #if defined(GOOGLE_PROTOBUF_SUPPORT_WINDOWS_XP)
   CallOnceInitializedMutex<CriticalSectionLock> mu_{};
 #elif defined(_WIN32)
-  CallOnceInitializedMutex<std::mutex> mu_{};
+  CallOnceInitializedMutex<SystemMutex> mu_{};
 #else
-  std::mutex mu_{};
+  SystemMutex mu_{};
 #endif
 };
 
